@@ -133,5 +133,6 @@ dmypy.json
 
 # 추가
 references/
+result/
 mastered/
 target/
