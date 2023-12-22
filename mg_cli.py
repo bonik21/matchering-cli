@@ -14,42 +14,80 @@ Simple Matchering 2.0 Command Line Application.
 import matchering as mg
 from argparse import ArgumentParser
 import logging
-import sys
+import sys, os
+from pathlib import Path
 
 
-def parse_args():
+# 현재 .py파일이 존재하는 경로
+app_path = os.path.dirname(os.path.realpath(__file__))
+# os.chdir(app_path)
+
+# 레퍼런스용 프리셋 생성(references폴더에서 하위 폴더 만들고 음악 파일 넣기(.mp3, .wav, .aac, .flac)) 
+# 폴더명은 소문자만 사용. 음악파일은 폴더당 하나만 넣어야함.
+def reference_preset():
+    reference_path = Path(f"{app_path}/references")
+    # 레퍼런스 폴더의 구조를 읽어들여서 preset_list 딕셔너리 생성
+    preset_list = {}    
+    for folder in reference_path.iterdir():
+        if folder.is_dir():            
+            files = [str(entry) for entry in folder.iterdir() if entry.is_file() and entry.suffix.lower() in ['.mp3', '.wav', '.aac', '.flac']]                        
+            if files:
+                preset_list[folder.name] = files[0]        
+    return preset_list
+
+
+# 레퍼런스 정의(파일인지 프리셋인지)
+def is_file_or_preset(value):
+    # 입력값과 딕셔너리의 대소문자를 통일시켜 비교
+    value_lower = value.lower()
+
+    # 파일 경로가 존재하는지 확인
+    if Path(value).is_file():
+        return value
+    # 프리셋 딕셔너리에서 가져올 수 있는지 확인
+    elif value_lower in (preset.lower() for preset in reference_preset()):
+        return reference_preset()[value_lower]
+    else:
+        raise ValueError(f"입력값 '{value}'은(는) 유효한 파일 경로 또는 프리셋이 아닙니다.")
+
+
+def parse_args():    
     parser = ArgumentParser(
-        description="Simple Matchering 2.0 Command Line Application"
+        description="Matchering 2.0 CLI(Command Line Application) modified by BoniK"
     )
-    parser.add_argument("target", type=str, help="The track you want to master")
-    parser.add_argument("reference", type=str, help='Some "wet" reference track')
-    parser.add_argument("result", type=str, help="Where to save your result")
+    parser.add_argument("target", type=str, help="마스터링 대상 오디오")
+    parser.add_argument(
+        "reference",
+        type=is_file_or_preset,        
+        help=f'레퍼런스 오디오. 프리셋 선택가능 {list(reference_preset().keys())}'
+    )
+    parser.add_argument("result", type=str, help="결과물을 저장할 경로")
     parser.add_argument(
         "-b",
         "--bit",
         type=int,
         choices=[16, 24, 32],
         default=16,
-        help="The bit depth of your mastered result. 32 means 32-bit float",
+        help="마스터링 결과의 bit depth. 기본값 16. 32는 32-bit float",
     )
     parser.add_argument(
         "--log",
         type=str,
         default=None,
-        help="The file to which the logs will be written",
+        help="로그가 기록될 파일",
     )
     parser.add_argument(
         "--no_limiter",
         dest="no_limiter",
         action="store_true",
-        help="Disables the limiter at the final stage of processing",
+        help="마지막 단계에서 리미터를 비활성합니다.",
     )
     parser.add_argument(
         "--dont_normalize",
         dest="dont_normalize",
         action="store_true",
-        help="Disables normalization, if --no_limiter is set. "
-        "Can cause clipping if the bit depth is not 32",
+        help="--no_limiter 설정시 노멀라이징을 비활성합니다."
+        "bit depth가 32가 아니라면 클리핑을 발생시킬 수 있습니다.",
     )
     return parser.parse_args()
 

@@ -82,7 +82,7 @@ Simple Matchering 2.0 Command Line Application
 
 positional arguments:
   target                The track you want to master
-  reference             Some "wet" reference track
+  reference             Some "wet" reference track (프리셋 기능 추가함)
   result                Where to save your result
 
 optional arguments:
