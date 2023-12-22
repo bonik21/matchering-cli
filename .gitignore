@@ -132,7 +132,6 @@ dmypy.json
 .idea/
 
 # 추가
-references/
-result/
-mastered/
-target/
+references/*
+result/*
+target/*
