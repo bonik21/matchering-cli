@@ -21,6 +21,14 @@ from pathlib import Path
 # 현재 .py파일이 존재하는 경로
 app_path = os.path.dirname(os.path.realpath(__file__))
 # os.chdir(app_path)
+target_path = Path(f"{app_path}/target")
+references_path = Path(f"{app_path}/references")
+result_path = Path(f"{app_path}/result")
+# 폴더 없으면 생성
+target_path.mkdir(exist_ok=True)
+references_path.mkdir(exist_ok=True)
+result_path.mkdir(exist_ok=True)
+
 
 # 레퍼런스용 프리셋 생성(references폴더에서 하위 폴더 만들고 음악 파일 넣기(.mp3, .wav, .aac, .flac)) 
 # 폴더명은 소문자만 사용. 음악파일은 폴더당 하나만 넣어야함.
