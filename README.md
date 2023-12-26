@@ -2,7 +2,7 @@
 
 # Matchering CLI
 
-### Simple Matchering 2.0 Command Line Application
+### Simple Matchering 2.0 Command Line Application (customized by BoniK)
 
 Compact and easy-to-use CLI app for working with the **[Matchering python library][matchering]**. Use it for audio batch processing.
 
@@ -74,31 +74,36 @@ And then:
 ```./mg_cli.py my_song.wav some_popular_song.wav my_song_master_16bit.wav```
 
 ```
-usage: mg_cli.py [-h] [-b {16,24,32}] [--log LOG] [--no_limiter]
-                 [--dont_normalize]
-                 target reference result
+usage: mg_cli.py [-h] [-b {16,24,32}] [--log LOG] [--no_limiter] [--dont_normalize] [--aac] [--del_target] target reference result
 
-Simple Matchering 2.0 Command Line Application
+Matchering 2.0 CLI(Command Line Application) modified by BoniK
 
 positional arguments:
-  target                The track you want to master
-  reference             Some "wet" reference track (프리셋 기능 추가함)
-  result                Where to save your result
+  target                마스터링 대상 오디오
+  reference             레퍼런스 오디오. 프리셋 선택가능 ['ballad', 'dance', 'default', 'folk', 'pop']
+  result                결과물을 저장할 경로
 
-optional arguments:
+options:
   -h, --help            show this help message and exit
   -b {16,24,32}, --bit {16,24,32}
-                        The bit depth of your mastered result. 32 means 32-bit
-                        float
-  --log LOG             The file to which the logs will be written
-  --no_limiter          Disables the limiter at the final stage of processing
-  --dont_normalize      Disables normalization, if --no_limiter is set. Can
-                        cause clipping if the bit depth is not 32
+                        마스터링 결과의 bit depth. 기본값 16. 32는 32-bit float
+  --log LOG             로그가 기록될 파일
+  --no_limiter          마지막 단계에서 리미터를 비활성합니다.
+  --dont_normalize      --no_limiter 설정시 노멀라이징을 비활성합니다.bit depth가 32가 아니라면 클리핑을 발생시킬 수 있습니다.
+  --aac                 --aac 마스터링된 wav를 다시 aac로 변환합니다.
+  --del_target          --del_target 원본(target) 파일을 삭제합니다.                
 ```
+
+### 프리셋 만들기
+reference 폴더 안에 원하는 프리셋명으로 폴더 작성
+각 폴더 마다 하나의 wav파일을 넣으면 됩니다.
+
 
 ### Visit **[Matchering main repo][matchering]** to learn more about it!
 
-## A Coffee
+### 수정판 작성자 보닉의 블로그 **[그늘진 낙원][bonik's blog]** to learn more about it!
+
+## A Coffee(원작자의 링크)
 
 If our script saved your time or money, you may:
 
@@ -106,6 +111,7 @@ If our script saved your time or money, you may:
 
 **Thank you!**
 
+[bonik's blog]: https://bonik.me
 [matchering]: https://github.com/sergree/matchering
 [anaconda]: https://www.anaconda.com/products/individual#Downloads
 [FFmpeg]: https://www.ffmpeg.org/download.html
