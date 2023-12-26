@@ -16,6 +16,7 @@ from argparse import ArgumentParser
 import logging
 import sys, os
 from pathlib import Path
+import ffmpeg
 
 
 # 현재 .py파일이 존재하는 경로
@@ -57,6 +58,35 @@ def is_file_or_preset(value):
         return reference_preset()[value_lower]
     else:
         raise ValueError(f"입력값 '{value}'은(는) 유효한 파일 경로 또는 프리셋이 아닙니다.")
+    
+# 중복 확장자 제거
+def fix_extension(file_path):
+    # 파일 이름과 확장자를 분리
+    base_path, ext = os.path.splitext(file_path)
+    
+    # 원하는 확장자 목록
+    target_extensions = ['.aac', '.mp3', '.flac', '.wav']
+    
+    # base_path에서 target_extensions 제거
+    for target_ext in target_extensions:
+        base_path = base_path.replace(target_ext, '')
+    
+    # 정리된 파일 경로 반환
+    cleaned_path = base_path + ext
+    
+    return cleaned_path
+
+
+# Wav to AAC 컨버팅(ffmpeg이용)
+def wav_to_aac(wav_file):    
+    aac_file = wav_file[:-4] + ".aac"
+    (
+        ffmpeg
+        .input(wav_file)
+        .output(aac_file)
+        .run(overwrite_output=True, capture_stdout=True)
+    )
+    return    
 
 
 def parse_args():    
@@ -69,7 +99,11 @@ def parse_args():
         type=is_file_or_preset,        
         help=f'레퍼런스 오디오. 프리셋 선택가능 {list(reference_preset().keys())}'
     )
-    parser.add_argument("result", type=str, help="결과물을 저장할 경로")
+    parser.add_argument(
+        "result",
+        type=fix_extension,
+        help="결과물을 저장할 경로"
+    )
     parser.add_argument(
         "-b",
         "--bit",
@@ -97,6 +131,19 @@ def parse_args():
         help="--no_limiter 설정시 노멀라이징을 비활성합니다."
         "bit depth가 32가 아니라면 클리핑을 발생시킬 수 있습니다.",
     )
+    parser.add_argument(
+        "--aac",
+        dest="to_aac",
+        action="store_true",
+        help="--aac wav를 aac로 변환합니다.",
+    )
+    parser.add_argument(
+        "--del_target",
+        dest="del_target",
+        action="store_true",
+        help="--del_target 원본(target) 파일을 삭제합니다.",
+    )    
+
     return parser.parse_args()
 
 
@@ -145,6 +192,11 @@ def run(args, logger):
                 )
             ],
         )
+        if args.to_aac:
+            wav_to_aac(args.result)
+            os.remove(args.result)
+        if args.del_target:            
+            os.remove(args.target)            
     except Exception as e:
         logger.exception("Got the exception while executing mg.process()")
 
