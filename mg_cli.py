@@ -31,7 +31,7 @@ references_path.mkdir(exist_ok=True)
 result_path.mkdir(exist_ok=True)
 
 
-# 레퍼런스용 프리셋 생성(references폴더에서 하위 폴더 만들고 음악 파일 넣기(.mp3, .wav, .aac, .flac)) 
+# 레퍼런스용 프리셋 생성(references폴더에서 하위 폴더 만들고 음악 파일 넣기(.mp3, .wav, .m4a, .flac)) 
 # 폴더명은 소문자만 사용. 음악파일은 폴더당 하나만 넣어야함.
 def reference_preset():
     reference_path = Path(f"{app_path}/references")
@@ -39,7 +39,7 @@ def reference_preset():
     preset_list = {}    
     for folder in reference_path.iterdir():
         if folder.is_dir():            
-            files = [str(entry) for entry in folder.iterdir() if entry.is_file() and entry.suffix.lower() in ['.mp3', '.wav', '.aac', '.flac']]                        
+            files = [str(entry) for entry in folder.iterdir() if entry.is_file() and entry.suffix.lower() in ['.mp3', '.wav', '.m4a', '.aac', '.flac']]                        
             if files:
                 preset_list[folder.name] = files[0]        
     return preset_list
@@ -65,7 +65,7 @@ def fix_extension(file_path):
     base_path, ext = os.path.splitext(file_path)
     
     # 원하는 확장자 목록
-    target_extensions = ['.aac', '.mp3', '.flac', '.wav']
+    target_extensions = ['.aac', '.m4a', '.mp3', '.flac', '.wav', '.mp4']
     
     # base_path에서 target_extensions 제거
     for target_ext in target_extensions:
@@ -77,13 +77,13 @@ def fix_extension(file_path):
     return cleaned_path
 
 
-# Wav to AAC 컨버팅(ffmpeg이용)
-def wav_to_aac(wav_file):    
-    aac_file = wav_file[:-4] + ".aac"
+# Wav to M4a 컨버팅(ffmpeg이용)
+def wav_to_m4a(wav_file):    
+    m4a_file = wav_file[:-4] + ".m4a"
     (
         ffmpeg
         .input(wav_file)
-        .output(aac_file)
+        .output(m4a_file)
         .run(overwrite_output=True, capture_stdout=True)
     )
     return    
@@ -132,10 +132,10 @@ def parse_args():
         "bit depth가 32가 아니라면 클리핑을 발생시킬 수 있습니다.",
     )
     parser.add_argument(
-        "--aac",
-        dest="to_aac",
+        "--m4a",
+        dest="to_m4a",
         action="store_true",
-        help="--aac wav를 aac로 변환합니다.",
+        help="--m4a wav를 m4a로 변환합니다.",
     )
     parser.add_argument(
         "--del_target",
@@ -192,8 +192,8 @@ def run(args, logger):
                 )
             ],
         )
-        if args.to_aac:
-            wav_to_aac(args.result)
+        if args.to_m4a:
+            wav_to_m4a(args.result)
             os.remove(args.result)
         if args.del_target:            
             os.remove(args.target)            

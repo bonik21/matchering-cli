@@ -74,7 +74,7 @@ And then:
 ```./mg_cli.py my_song.wav some_popular_song.wav my_song_master_16bit.wav```
 
 ```
-usage: mg_cli.py [-h] [-b {16,24,32}] [--log LOG] [--no_limiter] [--dont_normalize] [--aac] [--del_target] target reference result
+usage: mg_cli.py [-h] [-b {16,24,32}] [--log LOG] [--no_limiter] [--dont_normalize] [--m4a] [--del_target] target reference result
 
 Matchering 2.0 CLI(Command Line Application) modified by BoniK
 
@@ -90,7 +90,7 @@ options:
   --log LOG             로그가 기록될 파일
   --no_limiter          마지막 단계에서 리미터를 비활성합니다.
   --dont_normalize      --no_limiter 설정시 노멀라이징을 비활성합니다.bit depth가 32가 아니라면 클리핑을 발생시킬 수 있습니다.
-  --aac                 --aac 마스터링된 wav를 다시 aac로 변환합니다.
+  --m4a                 --m4a 마스터링된 wav를 다시 m4a로 변환합니다.
   --del_target          --del_target 원본(target) 파일을 삭제합니다.                
 ```
 
