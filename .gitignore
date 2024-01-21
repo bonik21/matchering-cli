@@ -132,6 +132,7 @@ dmypy.json
 .idea/
 
 # 추가
-#references/*
+references/*
+!/references/.gitkeep
 result/*
 target/*
